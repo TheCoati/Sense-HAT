@@ -66,19 +66,16 @@ def main_loop():
         if x < 0:
             x = MAX_WIDTH - 1
 
-        print(snake_coords)
-        print([x, y])
-
-        if [x, y] in snake_coords:
-            print('Game Over!')
-            return
-
-        snake_coords.insert(0, [x, y])
-
-        if snake_coords[0] == food_coords:
+        if [x, y] == food_coords:
             generate_food()
         else:
             snake_coords.pop()
+
+        if [x, y] in snake_coords:
+            sense.show_message("Game Over", text_colour=(255, 0, 0), scroll_speed=0.1)
+            return
+
+        snake_coords.insert(0, [x, y])
 
         sense.clear()
 
