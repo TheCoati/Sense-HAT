@@ -3,6 +3,8 @@ import threading
 import time
 import random
 
+running = True
+
 MAX_WIDTH = 8
 MAX_HEIGHT = 8
 
@@ -11,6 +13,7 @@ snake_coords = [
     [3, 6],
     [3, 7],
 ]
+snake_speed = 1
 food_coords = [0, 0]
 last_input = 'up'
 
@@ -35,10 +38,13 @@ def generate_food():
 
 
 def main_loop():
+    global running
+    global snake_speed
+
     sense.clear()
     generate_food()
 
-    while True:
+    while running:
         x = snake_coords[0][0]
         y = snake_coords[0][1]
 
@@ -68,11 +74,15 @@ def main_loop():
 
         if [x, y] == food_coords:
             generate_food()
+
+            if snake_speed > 0.3:
+                snake_speed = snake_speed - 0.1
         else:
             snake_coords.pop()
 
         if [x, y] in snake_coords:
             sense.show_message("Game Over", text_colour=(255, 0, 0), scroll_speed=0.1)
+            running = False
             return
 
         snake_coords.insert(0, [x, y])
@@ -85,16 +95,20 @@ def main_loop():
 
         sense.set_pixel(food_coords[0], food_coords[1], (0, 255, 0))
 
-        time.sleep(1)
+        time.sleep(snake_speed)
+
+    return
 
 
 def input_loop():
     global last_input
 
-    while True:
+    while running:
         for event in sense.stick.get_events():
             if event.action == 'pressed':
                 last_input = event.direction
+
+    return
 
 
 main_thread = threading.Thread(target=main_loop).start()
